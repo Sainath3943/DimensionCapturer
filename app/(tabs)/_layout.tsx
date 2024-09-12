@@ -32,6 +32,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="scanner"
+        options={{
+          title: 'Scan',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'camera' : 'camera-outline'} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
