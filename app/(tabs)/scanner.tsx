@@ -6,9 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedButton } from '@/components/ThemedButton';
 
-
-const LOCAL_IP = '192.168.0.114';  // Example IP, use your actual local IP
-const SERVER_URL = `http://${LOCAL_IP}:8000`;
+const SERVER_URL = 'https://54.41.36.82';  // Replace with your actual Flask app URL
 
 const App: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -72,9 +70,10 @@ const App: React.FC = () => {
         type: 'image/jpeg',
         name: 'image.jpg',
       } as any);
+  
       console.log('Sending image to server:', uri);
-      console.log('Sending image to server:', formData);
-    
+      console.log('Server URL:', `${SERVER_URL}/process-image/`);
+  
       const response = await fetch(`${SERVER_URL}/process-image/`, {
         method: 'POST',
         body: formData,
@@ -82,24 +81,32 @@ const App: React.FC = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log(response);
-
+  
+      console.log('Response status:', response.status);
+      console.log('Response headers:', JSON.stringify(response.headers));
+  
       if (response.ok) {
         const blob = await response.blob();
         const processedImageUri = URL.createObjectURL(blob);
         setProcessedImage(processedImageUri);
         
-        // Get the processing message from the header
         const processMessage = response.headers.get('X-Process-Message');
         if (processMessage) {
           Alert.alert('Processing Result', processMessage);
         }
       } else {
         console.error('Error processing image:', response.statusText);
+        const responseText = await response.text();
+        console.error('Response text:', responseText);
         Alert.alert('Error', 'Failed to process the image');
       }
     } catch (error) {
       console.error('Error processing image:', error);
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
       Alert.alert('Error', 'An error occurred while processing the image');
     }
   };
